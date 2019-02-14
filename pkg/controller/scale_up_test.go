@@ -15,7 +15,7 @@ func TestControllerScaleUpUntaint(t *testing.T) {
 	t.Skip("test not implemented")
 }
 
-func TestControllerUntaintNewestN(t *testing.T) {
+func TestControllerUntaintOldestN(t *testing.T) {
 	nodes := []*v1.Node{
 		0: test.BuildTestNode(test.NodeOpts{
 			Name:     "n1",
@@ -174,7 +174,7 @@ func TestControllerUntaintNewestN(t *testing.T) {
 
 			// test wet mode
 			c.Opts.DryMode = false
-			got := c.untaintNewestN(tt.args.nodes, tt.args.nodeGroup, tt.args.n)
+			got := c.untaintOldestN(tt.args.nodes, tt.args.nodeGroup, tt.args.n)
 			eq := assert.Equal(t, tt.want, got)
 			if eq {
 				for _, i := range got {
@@ -192,7 +192,7 @@ func TestControllerUntaintNewestN(t *testing.T) {
 
 			// test dry mode
 			c.Opts.DryMode = true
-			got = c.untaintNewestN(tt.args.nodes, tt.args.nodeGroup, tt.args.n)
+			got = c.untaintOldestN(tt.args.nodes, tt.args.nodeGroup, tt.args.n)
 			assert.Equal(t, tt.want, got)
 		})
 	}

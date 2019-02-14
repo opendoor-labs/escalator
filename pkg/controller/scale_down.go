@@ -140,7 +140,7 @@ func (c *Controller) scaleDownTaint(opts scaleOpts) (int, error) {
 		return 0, err
 	}
 	// Perform the tainting loop with the fail safe around it
-	tainted := c.taintOldestN(opts.untaintedNodes, opts.nodeGroup, nodesToRemove)
+	tainted := c.taintNewestN(opts.untaintedNodes, opts.nodeGroup, nodesToRemove)
 	// Validate the fail-safe worked
 	if err := k8s.EndTaintFailSafe(len(tainted)); err != nil {
 		log.Errorf("Failed to validate safety lock on tainter: %v", err)
@@ -151,10 +151,10 @@ func (c *Controller) scaleDownTaint(opts scaleOpts) (int, error) {
 	return len(tainted), nil
 }
 
-// taintOldestN sorts nodes by creation time and taints the oldest N. It will return an array of indices of the nodes it tainted
+// taintNewestN sorts nodes by creation time and taints the newest N. It will return an array of indices of the nodes it tainted
 // indices are from the parameter nodes indexes, not the sorted index
-func (c *Controller) taintOldestN(nodes []*v1.Node, nodeGroup *NodeGroupState, n int) []int {
-	sorted := make(nodesByOldestCreationTime, 0, len(nodes))
+func (c *Controller) taintNewestN(nodes []*v1.Node, nodeGroup *NodeGroupState, n int) []int {
+	sorted := make(nodesByNewestCreationTime, 0, len(nodes))
 	for i, node := range nodes {
 		sorted = append(sorted, nodeIndexBundle{node, i})
 	}

@@ -149,7 +149,7 @@ func TestControllerScaleDownTaint(t *testing.T) {
 	}
 }
 
-func TestControllerTaintOldestN(t *testing.T) {
+func TestControllerTaintNewestN(t *testing.T) {
 
 	nodes := []*v1.Node{
 		0: test.BuildTestNode(test.NodeOpts{
@@ -295,7 +295,7 @@ func TestControllerTaintOldestN(t *testing.T) {
 			// test wet mode
 			c.Opts.DryMode = false
 			assert.NoError(t, k8s.BeginTaintFailSafe(len(tt.want)))
-			got := c.taintOldestN(tt.args.nodes, tt.args.nodeGroup, tt.args.n)
+			got := c.taintNewestN(tt.args.nodes, tt.args.nodeGroup, tt.args.n)
 			assert.NoError(t, k8s.EndTaintFailSafe(len(got)))
 			eq := assert.Equal(t, tt.want, got)
 			if eq {
@@ -314,7 +314,7 @@ func TestControllerTaintOldestN(t *testing.T) {
 			// test dry mode
 			assert.NoError(t, k8s.BeginTaintFailSafe(len(tt.want)))
 			c.Opts.DryMode = true
-			got = c.taintOldestN(tt.args.nodes, tt.args.nodeGroup, tt.args.n)
+			got = c.taintNewestN(tt.args.nodes, tt.args.nodeGroup, tt.args.n)
 			assert.NoError(t, k8s.EndTaintFailSafe(len(got)))
 			assert.Equal(t, tt.want, got)
 

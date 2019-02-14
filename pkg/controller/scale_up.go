@@ -108,15 +108,15 @@ func (c *Controller) scaleUpUntaint(opts scaleOpts) (int, error) {
 	log.WithField("nodegroup", nodegroupName).Infof("Scaling Up: Trying to untaint %v tainted nodes", nodesToAdd)
 	metrics.NodeGroupUntaintEvent.WithLabelValues(nodegroupName).Add(float64(nodesToAdd))
 
-	untainted := c.untaintNewestN(opts.taintedNodes, opts.nodeGroup, nodesToAdd)
+	untainted := c.untaintOldestN(opts.taintedNodes, opts.nodeGroup, nodesToAdd)
 	log.Infof("Untainted a total of %v nodes", len(untainted))
 	return len(untainted), nil
 }
 
-// untaintNewestN sorts nodes by creation time and untaints the newest N. It will return an array of indices of the nodes it untainted
+// untaintOldestN sorts nodes by creation time and untaints the oldest N. It will return an array of indices of the nodes it untainted
 // indices are from the parameter nodes indexes, not the sorted index
-func (c *Controller) untaintNewestN(nodes []*v1.Node, nodeGroup *NodeGroupState, n int) []int {
-	sorted := make(nodesByNewestCreationTime, 0, len(nodes))
+func (c *Controller) untaintOldestN(nodes []*v1.Node, nodeGroup *NodeGroupState, n int) []int {
+	sorted := make(nodesByOldestCreationTime, 0, len(nodes))
 	for i, node := range nodes {
 		sorted = append(sorted, nodeIndexBundle{node, i})
 	}
